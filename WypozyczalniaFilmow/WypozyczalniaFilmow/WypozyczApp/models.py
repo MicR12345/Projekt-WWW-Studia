@@ -13,7 +13,7 @@ class User(models.Model):
 
 
 class Movie(models.Model):
-    idMovie = models.IntegerField(primary_key=True,unique=True)
+    idMovie = models.IntegerField(primary_key=True, unique=True)
     title = models.CharField(max_length=200)
     publicationDate = models.DateField()
     originalLanguage = models.CharField(max_length=45)
@@ -33,17 +33,17 @@ class BorrowedMovies(models.Model):
 
 class Series(models.Model):
     idSeries = models.IntegerField(primary_key=True, unique=True)
-    title = models.CharField(max_lenght=200)
+    title = models.CharField(max_length=200)
     publicationDate = models.DateField()
-    seasonCount = models.IntegeField()
-    totalEpisodeCount = models.ItegerField()
-    originalLanguage = models.CharField(max_lenght=45)
-    countryOfOrigin = models.CharField(max_lenght=45)
-    genre = models.CharField(max_lenght=45)
-    broadcaster = models.CharField(max_lenght=45)
+    seasonCount = models.IntegerField()
+    totalEpisodeCount = models.IntegerField()
+    originalLanguage = models.CharField(max_length=45)
+    countryOfOrigin = models.CharField(max_length=45)
+    genre = models.CharField(max_length=45)
+    broadcaster = models.CharField(max_length=45)
     spinoff = models.IntegerField()
     startDate = models.DateField()
-    producer = models.CharField(max_lenght=45)
+    producer = models.CharField(max_length=45)
 
 
 class BorrowedMovies(models.Model):
@@ -64,4 +64,4 @@ class EpisodeData(models.Model):
     idSeries = models.ForeignKey(Series, on_delete=models.CASCADE)
     seasonNumber = models.IntegerField()
     episodeNumber = models.IntegerField()
-    title = models.CharField(max_lenght=200)
+    title = models.CharField(max_length=200)
