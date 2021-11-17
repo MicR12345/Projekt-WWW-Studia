@@ -46,7 +46,7 @@ class Series(models.Model):
     producer = models.CharField(max_length=45)
 
 
-class BorrowedMovies(models.Model):
+class BorrowedSeries(models.Model):
     idSeries = models.ForeignKey(Series, on_delete=models.CASCADE)
     idUser = models.ForeignKey(User, on_delete=models.CASCADE)
     duePayment = models.FloatField()
