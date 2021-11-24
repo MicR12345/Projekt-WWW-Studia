@@ -36,6 +36,10 @@ class UserSerializer(serializers.ModelSerializer):
         instance.password = validated_data.get('password', instance.password)
         instance.accessLevel = validated_data.get('accessLevel', instance.accessLevel)
 
+    class Meta:
+        model = User
+        fields = ['idUser', 'name', 'dateOfBirth','login', 'password', 'accessLevel']
+
 
 class MovieSerializer(serializers.ModelSerializer):
     class Meta:
@@ -45,11 +49,11 @@ class MovieSerializer(serializers.ModelSerializer):
 
 
 class SeriesSerializer(serializers.Serializer):
-    idSeries = serializers.IntegerField(primary_key=True, unique=True)
-    title = serializers.CharField(max_lengtht=200)
+    idSeries = serializers.IntegerField()
+    title = serializers.CharField(max_length=200)
     publicationDate = serializers.DateField()
-    seasonCount = serializers.IntegeField()
-    totalEpisodeCount = serializers.ItegerField()
+    seasonCount = serializers.IntegerField()
+    totalEpisodeCount = serializers.IntegerField()
     originalLanguage = serializers.CharField(max_length=45)
     countryOfOrigin = serializers.CharField(max_length=45)
     genre = serializers.CharField(max_length=45)
@@ -68,9 +72,9 @@ class SeriesSerializer(serializers.Serializer):
     def validate_publicationDate(self, value):
         if value != '':
             try:
-                datetime.datetime.strptime(value, '%Y-%m-%d')
+                datetime.date.strftime(value, '%Y.%m.%d')
             except ValueError:
-                raise serializers.ValidationError("Incorrect data format, should be YYYY-MM-DD")
+                raise serializers.ValidationError("Incorrect data format, should be YYYY.MM.DD")
         return value
 
     def create(self, validatedData):
@@ -101,7 +105,7 @@ class BorrowedMoviesSerializer(serializers.ModelSerializer):
 
 
 class BorrowedSeriesSerializer(serializers.ModelSerializer):
-    idSeries = Series(read_only=True)
+    idSeries = SeriesSerializer(read_only=True)
     idUser = UserSerializer(read_only=True)
 
     class Meta:
