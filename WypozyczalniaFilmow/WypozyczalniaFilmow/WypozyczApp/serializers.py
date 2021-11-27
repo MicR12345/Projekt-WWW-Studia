@@ -124,5 +124,5 @@ class EpisodeDataSerializer(serializers.ModelSerializer):
     idSeries = serializers.SlugRelatedField(queryset=Series.objects.all(), slug_field='idSeries')
 
     class Meta:
-        model = Subtitles
+        model = EpisodeData
         fields = ['idEpisode', 'idSeries', 'seasonNumber', 'episodeNumber', 'title']
