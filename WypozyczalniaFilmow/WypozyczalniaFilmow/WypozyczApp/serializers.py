@@ -95,9 +95,9 @@ class SeriesSerializer(serializers.Serializer):
         instance.producer = validatedData.get('producer', instance.producer)
 
 
-class BorrowedMoviesSerializer(serializers.ModelSerializer):
-    idMovie = MovieSerializer(read_only=True)
-    idUser = UserSerializer(read_only=True)
+class BorrowedMoviesSerializer(serializers.HyperlinkedModelSerializer):
+    idMovie = serializers.HyperlinkedRelatedField(many=True,read_only=True,view_name='movie-detail')
+    idUser = serializers.HyperlinkedRelatedField(many=True,read_only=True,view_name='user-detail')
 
     class Meta:
         model = BorrowedMovies
@@ -105,23 +105,23 @@ class BorrowedMoviesSerializer(serializers.ModelSerializer):
 
 
 class BorrowedSeriesSerializer(serializers.ModelSerializer):
-    idSeries = SeriesSerializer(read_only=True)
-    idUser = UserSerializer(read_only=True)
+    idSeries = serializers.HyperlinkedRelatedField(many=True,read_only=True,view_name='series-detail')
+    idUser = serializers.HyperlinkedRelatedField(many=True,read_only=True,view_name='user-detail')
 
     class Meta:
         model = BorrowedSeries
         fields = ['idSeries', 'idUser', 'duePayment', 'borrowedDate']
 
 class SubtitlesSerializer(serializers.ModelSerializer):
-    idMovie = MovieSerializer(read_only=True)
-    idSeries = SeriesSerializer(read_only=True)
+    idMovie = serializers.SlugRelatedField(queryset=Movie.objects.all(),slug_field='title',many=True)
+    idSeries = serializers.SlugRelatedField(queryset=Series.objects.all(),slug_field='title',many=True)
 
     class Meta:
         model = Subtitles
         fields = ['idMovie', 'idSeries', 'subtitles']
 
 class EpisodeDataSerializer(serializers.ModelSerializer):
-    idSeries = SeriesSerializer(read_only=True)
+    idSeries = serializers.HyperlinkedRelatedField(many=True,read_only=True,view_name='series-detail')
 
     class Meta:
         model = Subtitles

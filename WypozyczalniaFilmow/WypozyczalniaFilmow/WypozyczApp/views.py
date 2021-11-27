@@ -119,5 +119,12 @@ class ApiRoot(generics.GenericAPIView):
     def get(self,request,*args,**kwargs):
         return Response({
             'status': 'request was permitted',
-            'users': reverse(UserList.name,request=request)
+            'users': reverse(UserList.name,request=request),
+            'series': reverse(SeriesList.name,request=request),
+            'movies': reverse(MovieList.name, request=request),
+            'borrowedmovies': reverse(BorrowedMovies.name, request=request),
+            'borrowedseries': reverse(BorrowedSeries.name, request=request),
+            'subtitles': reverse(SubtitlesList.name, request=request),
+            'episodedata': reverse(EpisodeDataList.name, request=request),
+
         })
