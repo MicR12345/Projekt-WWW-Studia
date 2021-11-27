@@ -90,8 +90,8 @@ class BorrowedMoviesDetail(generics.RetrieveUpdateDestroyAPIView):
     name = 'borrowedmovies-detail'
 
 class BorrowedSeriesList(generics.ListCreateAPIView):
-    queryset = BorrowedMovies.objects.all()
-    serializer_class = BorrowedMoviesSerializer
+    queryset = BorrowedSeries.objects.all()
+    serializer_class = BorrowedSeriesSerializer
     permission_classes = [IsAuthenticated]
     name = 'borrowedseries-list'
 
@@ -103,13 +103,25 @@ class BorrowedSeriesDetail(generics.RetrieveUpdateDestroyAPIView):
 
 class SubtitlesList(generics.ListCreateAPIView):
     queryset = Subtitles.objects.all()
-    serializer_class = SeriesSerializer
+    serializer_class = SubtitlesSerializer
     permission_classes = [IsAuthenticated]
     name = 'subtitles-list'
 
 class SubtitlesDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Subtitles.objects.all()
-    serializer_class = SeriesSerializer
+    serializer_class = SubtitlesSerializer
+    permission_classes = [IsAuthenticated]
+    name = 'subtitles-detail'
+
+class EpisodeDataList(generics.RetrieveUpdateDestroyAPIView):
+    queryset = EpisodeData.objects.all()
+    serializer_class = EpisodeDataSerializer
+    permission_classes = [IsAuthenticated]
+    name = 'subtitles-list'
+
+class EpisodeDataDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = EpisodeData.objects.all()
+    serializer_class = EpisodeDataSerializer
     permission_classes = [IsAuthenticated]
     name = 'subtitles-detail'
 
@@ -122,8 +134,8 @@ class ApiRoot(generics.GenericAPIView):
             'users': reverse(UserList.name,request=request),
             'series': reverse(SeriesList.name,request=request),
             'movies': reverse(MovieList.name, request=request),
-            'borrowedmovies': reverse(BorrowedMovies.name, request=request),
-            'borrowedseries': reverse(BorrowedSeries.name, request=request),
+            'borrowedmovies': reverse(BorrowedMoviesList.name, request=request),
+            'borrowedseries': reverse(BorrowedSeriesList.name, request=request),
             'subtitles': reverse(SubtitlesList.name, request=request),
             'episodedata': reverse(EpisodeDataList.name, request=request),
 
