@@ -5,11 +5,15 @@ import datetime
 
 class UserSerializer(serializers.ModelSerializer):
     idUser = serializers.IntegerField()
+    owner = serializers.ReadOnlyField(source='owner.username')
     name = serializers.CharField(max_length=45)
     dateOfBirth = serializers.DateField()
     login = serializers.CharField(max_length=45)
     password = serializers.CharField(max_length=45)
     accessLevel = serializers.IntegerField()
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
 
     def validate_dateOfBirth(self,value):
         if value > datetime.date.today():
@@ -38,14 +42,19 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['idUser', 'name', 'dateOfBirth','login', 'password', 'accessLevel']
+        fields = ['idUser', 'name', 'dateOfBirth','login', 'password', 'accessLevel','owner']
 
 
 class MovieSerializer(serializers.ModelSerializer):
+    owner = serializers.ReadOnlyField(source='owner.username')
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
     class Meta:
         model = Movie
         fields = ['idMovie', 'title', 'publicationDate', 'originalLanguage', 'genre', 'director', 'screenwriter',
-                  'countryOfOrigin', 'producer']
+                  'countryOfOrigin', 'producer','owner']
 
 
 class SeriesSerializer(serializers.Serializer):
@@ -61,6 +70,10 @@ class SeriesSerializer(serializers.Serializer):
     spinoff = serializers.IntegerField()
     startDate = serializers.DateField()
     producer = serializers.CharField(max_length=45)
+    owner = serializers.ReadOnlyField(source='owner.username')
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
 
     def validate_title(self, value):
         if value == '':
@@ -96,32 +109,45 @@ class SeriesSerializer(serializers.Serializer):
 
 
 class BorrowedMoviesSerializer(serializers.HyperlinkedModelSerializer):
-    idMovie = serializers.SlugRelatedField(queryset=Movie.objects.all(), slug_field='idMovie')
-    idUser = serializers.SlugRelatedField(queryset=User.objects.all(), slug_field='idUser')
+    idMovie = serializers.SlugRelatedField(queryset=Movie.objects.all(), slug_field='title')
+    idUser = serializers.SlugRelatedField(queryset=User.objects.all(), slug_field='login')
+    owner = serializers.ReadOnlyField(source='owner.username')
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
 
     class Meta:
         model = BorrowedMovies
-        fields = ['idMovie', 'idUser', 'duePayment', 'borrowedDate']
+        fields = ['idMovie', 'idUser','owner', 'duePayment', 'borrowedDate']
 
 
 class BorrowedSeriesSerializer(serializers.ModelSerializer):
-    idSeries = serializers.SlugRelatedField(queryset=Series.objects.all(), slug_field='idSeries')
-    idUser = serializers.SlugRelatedField(queryset=User.objects.all(), slug_field='idUser')
+    idSeries = serializers.SlugRelatedField(queryset=Series.objects.all(), slug_field='title')
+    idUser = serializers.SlugRelatedField(queryset=User.objects.all(), slug_field='login')
+    owner = serializers.ReadOnlyField(source='owner.username')
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
 
     class Meta:
         model = BorrowedSeries
-        fields = ['idSeries', 'idUser', 'duePayment', 'borrowedDate']
+        fields = ['idSeries', 'idUser','owner', 'duePayment', 'borrowedDate']
 
 class SubtitlesSerializer(serializers.ModelSerializer):
-    idMovie = serializers.SlugRelatedField(queryset=Movie.objects.all(), slug_field='idMovie')
-    idSeries = serializers.SlugRelatedField(queryset=Series.objects.all(), slug_field='idSeries')
+    idMovie = serializers.SlugRelatedField(queryset=Movie.objects.all(), slug_field='title')
+    idSeries = serializers.SlugRelatedField(queryset=Series.objects.all(), slug_field='title')
+    owner = serializers.ReadOnlyField(source='owner.username')
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
 
     class Meta:
         model = Subtitles
-        fields = ['idMovie', 'idSeries', 'subtitles']
+        fields = ['idMovie', 'idSeries', 'subtitles','owner']
 
 class EpisodeDataSerializer(serializers.ModelSerializer):
-    idSeries = serializers.SlugRelatedField(queryset=Series.objects.all(), slug_field='idSeries')
+    idSeries = serializers.SlugRelatedField(queryset=Series.objects.all(), slug_field='title')
 
     class Meta:
         model = EpisodeData

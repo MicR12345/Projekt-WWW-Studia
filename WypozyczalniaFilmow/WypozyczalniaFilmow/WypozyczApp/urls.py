@@ -17,5 +17,4 @@ urlpatterns = [
     path('subtitles/<int:pk>',views.SubtitlesDetail.as_view(),name=views.SubtitlesDetail.name),
     path('episodedata', views.EpisodeDataList.as_view(), name=views.EpisodeDataList.name),
     path('episodedata/<int:pk>', views.EpisodeDataDetail.as_view(), name=views.EpisodeDataDetail.name),
-    path('', views.index, name='index'),
 ]

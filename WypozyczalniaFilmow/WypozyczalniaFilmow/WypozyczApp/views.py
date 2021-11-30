@@ -6,9 +6,11 @@ from django_filters import AllValuesFilter,DateTimeFilter,NumberFilter,FilterSet
 
 from rest_framework import generics
 from rest_framework.reverse import reverse
-from rest_framework.permissions import IsAuthenticated,IsAdminUser
+from rest_framework.permissions import IsAuthenticated,IsAdminUser,IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework import permissions
+
+from .permissions import  IsCurrentUserOwnerOrReadOnly,IsCurrentUserOwner,IsReadOnly
 
 
 from .models import Series,Movie,User,BorrowedMovies,BorrowedSeries,Subtitles, EpisodeData
@@ -16,9 +18,6 @@ from .serializers import SeriesSerializer,MovieSerializer,UserSerializer,Borrowe
     BorrowedMoviesSerializer,SubtitlesSerializer,EpisodeDataSerializer
 
 
-def index(request):
-    return HttpResponse("Hello, world. You're at the a index.")
-# Create your views here.
 class UserFilter(FilterSet):
     min_accessLevel = NumberFilter(field_name='accessLevel', lookup_expr='gte')
     max_accessLevel = NumberFilter(field_name='accessLevel', lookup_expr='lte')
@@ -35,13 +34,13 @@ class UserList(generics.ListCreateAPIView):
     search_fields = ['login','dateOfBirth']
     ordering_fields = ['login','dateOfBirth','accessLevel']
     filter_class = UserFilter
-    permission_classes = [IsAuthenticated,IsAdminUser]
+    permission_classes = [IsAdminUser,IsCurrentUserOwner]
 
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     name = 'user-detail'
-    permission_classes = [IsAuthenticated,IsAdminUser]
+    permission_classes = [IsCurrentUserOwner,IsAdminUser]
 
 class SeriesFilter(FilterSet):
     from_startDate = DateTimeFilter(field_name='startDate',lookup_expr='gte')
@@ -49,24 +48,23 @@ class SeriesFilter(FilterSet):
 
     class Meta:
         model = Series
-        fields = ['from_startDate','to_startDate']
+        fields = ['from_startDate','to_startDate','title','publicationDate','originalLanguage','broadcaster']
 
 
 class SeriesList(generics.ListCreateAPIView):
     queryset = Series.objects.all()
     serializer_class = SeriesSerializer
     name = 'series-list'
-    filter_fields = ['title','publicationDate','originalLanguage','startDate','broadcaster']
     search_fields = ['title','broadcaster']
     ordering_fields = ['title','startDate','broadcaster']
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     filter_class = SeriesFilter
 
 class SeriesDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Series.objects.all()
     serializer_class = SeriesSerializer
     name = 'series-detail'
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
 class MovieFilter(FilterSet):
     from_publication_date = DateTimeFilter(field_name='publicationDate',lookup_expr='gte')
@@ -74,7 +72,7 @@ class MovieFilter(FilterSet):
 
     class Meta:
         model = Movie
-        fields = ['from_publication_date','to_publication_date']
+        fields = ['from_publication_date','to_publication_date','title', 'originalLanguage', 'genre', 'director', 'countryOfOrigin', 'producer']
 
 
 class MovieList(generics.ListCreateAPIView):
@@ -82,16 +80,15 @@ class MovieList(generics.ListCreateAPIView):
     serializer_class = MovieSerializer
     filter_class = MovieFilter
     name = 'movie-list'
-    filter_fields = ['title', 'publicationDate', 'originalLanguage', 'genre', 'director', 'countryOfOrigin', 'producer']
     search_fields = ['title', 'director']
     ordering_fields = ['title', 'publicationDate', 'director']
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
 class MovieDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Movie.objects.all()
     serializer_class = MovieSerializer
     name = 'movie-detail'
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
 class BorrowedMoviesFilter(FilterSet):
     borrowed_date_from = DateTimeFilter(field_name='borrowedDate', lookup_expr='gte')
@@ -104,7 +101,7 @@ class BorrowedMoviesFilter(FilterSet):
 class BorrowedMoviesList(generics.ListCreateAPIView):
     queryset = BorrowedMovies.objects.all()
     serializer_class = BorrowedMoviesSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsReadOnly]
     filter_class = BorrowedMoviesFilter
     name = 'borrowedmovies-list'
 
@@ -112,7 +109,7 @@ class BorrowedMoviesList(generics.ListCreateAPIView):
 class BorrowedMoviesDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = BorrowedMovies.objects.all()
     serializer_class = BorrowedMoviesSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsReadOnly]
     filter_class = BorrowedMoviesFilter
     name = 'borrowedmovies-detail'
 
@@ -127,7 +124,7 @@ class BorrowedSeriesFilter(FilterSet):
 class BorrowedSeriesList(generics.ListCreateAPIView):
     queryset = BorrowedSeries.objects.all()
     serializer_class = BorrowedSeriesSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsReadOnly]
     filter_class = BorrowedSeriesFilter
     name = 'borrowedseries-list'
 
@@ -135,25 +132,25 @@ class BorrowedSeriesList(generics.ListCreateAPIView):
 class BorrowedSeriesDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = BorrowedSeries.objects.all()
     serializer_class = BorrowedSeriesSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsReadOnly]
     name = 'borrowedseries-detail'
 
 class SubtitlesList(generics.ListCreateAPIView):
     queryset = Subtitles.objects.all()
     serializer_class = SubtitlesSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     name = 'subtitles-list'
 
 class SubtitlesDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Subtitles.objects.all()
     serializer_class = SubtitlesSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     name = 'subtitles-detail'
 
 class EpisodeDataList(generics.ListCreateAPIView):
     queryset = EpisodeData.objects.all()
     serializer_class = EpisodeDataSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     filter_fields = ['seasonNumber', 'episodeNumber', 'title']
     search_fields = ['seasonNumber', 'episodeNumber', 'title']
     ordering_fields = ['seasonNumber', 'episodeNumber', 'title']
@@ -162,12 +159,12 @@ class EpisodeDataList(generics.ListCreateAPIView):
 class EpisodeDataDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = EpisodeData.objects.all()
     serializer_class = EpisodeDataSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     name = 'episodedata-detail'
 
 class ApiRoot(generics.GenericAPIView):
     name = 'api-root'
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     def get(self,request,*args,**kwargs):
         return Response({
             'status': 'request was permitted',
