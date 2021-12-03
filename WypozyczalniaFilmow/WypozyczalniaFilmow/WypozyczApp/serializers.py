@@ -3,14 +3,12 @@ from .models import *
 import datetime
 
 
-class UserSerializer(serializers.ModelSerializer):
-    idUser = serializers.IntegerField()
+class ClientSerializer(serializers.ModelSerializer):
+    idClient = serializers.IntegerField()
     owner = serializers.ReadOnlyField(source='owner.username')
     name = serializers.CharField(max_length=45)
     dateOfBirth = serializers.DateField()
     login = serializers.CharField(max_length=45)
-    password = serializers.CharField(max_length=45)
-    accessLevel = serializers.IntegerField()
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
@@ -30,7 +28,7 @@ class UserSerializer(serializers.ModelSerializer):
         return value
 
     def create(self, validated_data):
-        return User.objects.create(**validated_data)
+        return Client.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
         instance.idUser = validated_data.get('idUser', instance.idUser)
@@ -41,7 +39,7 @@ class UserSerializer(serializers.ModelSerializer):
         instance.accessLevel = validated_data.get('accessLevel', instance.accessLevel)
 
     class Meta:
-        model = User
+        model = Client
         fields = ['idUser', 'name', 'dateOfBirth','login', 'password', 'accessLevel','owner']
 
 
@@ -57,20 +55,7 @@ class MovieSerializer(serializers.ModelSerializer):
                   'countryOfOrigin', 'producer','owner']
 
 
-class SeriesSerializer(serializers.Serializer):
-    idSeries = serializers.IntegerField()
-    title = serializers.CharField(max_length=200)
-    publicationDate = serializers.DateField()
-    seasonCount = serializers.IntegerField()
-    totalEpisodeCount = serializers.IntegerField()
-    originalLanguage = serializers.CharField(max_length=45)
-    countryOfOrigin = serializers.CharField(max_length=45)
-    genre = serializers.CharField(max_length=45)
-    broadcaster = serializers.CharField(max_length=45)
-    spinoff = serializers.IntegerField()
-    startDate = serializers.DateField()
-    producer = serializers.CharField(max_length=45)
-    owner = serializers.ReadOnlyField(source='owner.username')
+class SeriesSerializer(serializers.ModelSerializer):
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
@@ -90,27 +75,14 @@ class SeriesSerializer(serializers.Serializer):
                 raise serializers.ValidationError("Incorrect data format, should be YYYY.MM.DD")
         return value
 
-    def create(self, validatedData):
-        return Series.objects.create(**validatedData)
-
-    def update(self, instance, validatedData):
-        instance.idSeries = validatedData.get('idSeries', instance.idSeries)
-        instance.title = validatedData.get('title',instance.title)
-        instance.publicationDate = validatedData.get('publicationDate', instance.publicationDate)
-        instance.seasonCount = validatedData.get('seasonCount', instance.seasonCount)
-        instance.totalEpisodeCount = validatedData.get('totalEpisodeCount', instance.totalEpisodeCount)
-        instance.originalLanguage = validatedData.get('originalLanguage', instance.originalLanguage)
-        instance.countryOfOrigin = validatedData.get('countryOfOrigin', instance.countryOfOrigin)
-        instance.genre = validatedData.get('genre', instance.genre)
-        instance.broadcaster = validatedData.get('broadcaster', instance.broadcaster)
-        instance.spinoff = validatedData.get('spinoff', instance.spinoff)
-        instance.startDate = validatedData.get('startDate', instance.startDate)
-        instance.producer = validatedData.get('producer', instance.producer)
-
+    class Meta:
+        model = Series
+        fields = ['idSeries', 'title', 'publicationDate', 'seasonCount', 'totalEpisodeCount','originalLanguage',
+        'countryOfOrigin','genre','broadcaster','spinoff','startDate','owner']
 
 class BorrowedMoviesSerializer(serializers.HyperlinkedModelSerializer):
     idMovie = serializers.SlugRelatedField(queryset=Movie.objects.all(), slug_field='title')
-    idUser = serializers.SlugRelatedField(queryset=User.objects.all(), slug_field='login')
+    idClient = serializers.SlugRelatedField(queryset=Client.objects.all(), slug_field='login')
     owner = serializers.ReadOnlyField(source='owner.username')
 
     def perform_create(self, serializer):
@@ -124,7 +96,7 @@ class BorrowedMoviesSerializer(serializers.HyperlinkedModelSerializer):
 
 class BorrowedSeriesSerializer(serializers.ModelSerializer):
     idSeries = serializers.SlugRelatedField(queryset=Series.objects.all(), slug_field='title')
-    idUser = serializers.SlugRelatedField(queryset=User.objects.all(), slug_field='login')
+    idClient = serializers.SlugRelatedField(queryset=Client.objects.all(), slug_field='login')
     owner = serializers.ReadOnlyField(source='owner.username')
 
     def perform_create(self, serializer):
