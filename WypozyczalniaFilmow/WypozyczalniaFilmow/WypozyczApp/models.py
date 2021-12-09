@@ -6,7 +6,7 @@ from django.db import models
 
 class Client(models.Model):
     idClient = models.AutoField(primary_key=True)
-    owner = models.ForeignKey('auth.User', on_delete=models.CASCADE)
+    owner = models.ForeignKey('auth.User', on_delete=models.CASCADE, blank=True, null=True)
     name = models.CharField(max_length=45)
     dateOfBirth = models.DateField()
     login = models.CharField(max_length=45)

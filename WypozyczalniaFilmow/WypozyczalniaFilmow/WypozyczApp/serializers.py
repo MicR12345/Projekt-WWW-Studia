@@ -5,7 +5,7 @@ import datetime
 
 class ClientSerializer(serializers.ModelSerializer):
     idClient = serializers.IntegerField()
-    owner = serializers.ReadOnlyField(source='owner.username')
+    owner = serializers.ReadOnlyField(source='owner.username',required=False)
     name = serializers.CharField(max_length=45)
     dateOfBirth = serializers.DateField()
     login = serializers.CharField(max_length=45)
@@ -20,13 +20,6 @@ class ClientSerializer(serializers.ModelSerializer):
             )
         return value
 
-    def validate_accessLevel(self,value):
-        if value<0:
-            raise serializers.ValidationError(
-                "Access level cant be lower than 0"
-            )
-        return value
-
     def create(self, validated_data):
         return Client.objects.create(**validated_data)
 
@@ -35,7 +28,6 @@ class ClientSerializer(serializers.ModelSerializer):
         instance.name = validated_data.get('name', instance.name)
         instance.dateOfBirth = validated_data.get('dateOfBirth', instance.dateOfBirth)
         instance.login = validated_data.get('login', instance.login)
-        instance.password = validated_data.get('password', instance.password)
 
     class Meta:
         model = Client
