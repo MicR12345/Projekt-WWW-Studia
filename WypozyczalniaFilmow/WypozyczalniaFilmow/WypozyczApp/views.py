@@ -22,11 +22,11 @@ class ClientFilter(FilterSet):
     login = AllValuesFilter(field_name='login')
 
     class Meta:
-        model = User
+        model = Client
         fields = ['login']
 
 class ClientList(generics.ListCreateAPIView):
-    queryset = User.objects.all()
+    queryset = Client.objects.all()
     serializer_class = ClientSerializer
     name = 'client-list'
     search_fields = ['login','dateOfBirth']

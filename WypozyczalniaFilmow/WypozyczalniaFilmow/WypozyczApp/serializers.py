@@ -31,16 +31,15 @@ class ClientSerializer(serializers.ModelSerializer):
         return Client.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
-        instance.idUser = validated_data.get('idUser', instance.idUser)
+        instance.idClient = validated_data.get('idClient', instance.idUser)
         instance.name = validated_data.get('name', instance.name)
         instance.dateOfBirth = validated_data.get('dateOfBirth', instance.dateOfBirth)
         instance.login = validated_data.get('login', instance.login)
         instance.password = validated_data.get('password', instance.password)
-        instance.accessLevel = validated_data.get('accessLevel', instance.accessLevel)
 
     class Meta:
         model = Client
-        fields = ['idUser', 'name', 'dateOfBirth','login', 'password', 'accessLevel','owner']
+        fields = ['idClient', 'name', 'dateOfBirth','login','owner']
 
 
 class MovieSerializer(serializers.ModelSerializer):
