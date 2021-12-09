@@ -90,7 +90,7 @@ class BorrowedMoviesSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = BorrowedMovies
-        fields = ['idMovie', 'idUser','owner', 'duePayment', 'borrowedDate']
+        fields = ['idMovie', 'idClient','owner', 'duePayment', 'borrowedDate']
 
 
 class BorrowedSeriesSerializer(serializers.ModelSerializer):
@@ -103,7 +103,7 @@ class BorrowedSeriesSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = BorrowedSeries
-        fields = ['idSeries', 'idUser','owner', 'duePayment', 'borrowedDate']
+        fields = ['idSeries', 'idClient','owner', 'duePayment', 'borrowedDate']
 
 class SubtitlesSerializer(serializers.ModelSerializer):
     idMovie = serializers.SlugRelatedField(queryset=Movie.objects.all(), slug_field='title')
